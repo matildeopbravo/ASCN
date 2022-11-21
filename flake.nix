@@ -8,10 +8,14 @@
         name = "ascn";
         buildInputs = [
           ansible
+          (google-cloud-sdk.withExtraComponents [
+            google-cloud-sdk.components.kubectl
+          ])
           (python3.withPackages (p: with p; [
             ansible
             requests
             google-auth
+            kubernetes
           ]))
         ];
       };

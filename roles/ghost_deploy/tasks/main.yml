@@ -1,0 +1,33 @@
+---
+
+- name: Create MySQL PVC
+  kubernetes.core.k8s:
+    state: present
+    src: kubernetes/mysql/mysql-pvc.yml
+    namespace: default
+
+- name: Create MySQL deployment
+  kubernetes.core.k8s:
+    state: present
+    src: kubernetes/mysql/mysql-deployment.yml
+    namespace: default
+
+- name: Create MySQL service
+  kubernetes.core.k8s:
+    state: present
+    src: kubernetes/mysql/mysql-service.yml
+    namespace: default
+
+- name: Create Ghost deployment
+  kubernetes.core.k8s:
+    state: present
+    src: kubernetes/ghost/ghost-deployment.yml
+    namespace: default
+
+- name: Create Ghost service
+  kubernetes.core.k8s:
+    state: present
+    src: kubernetes/ghost/ghost-service.yml
+    namespace: default
+
+# TODO: Criar conta de admin
