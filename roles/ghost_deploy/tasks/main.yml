@@ -30,4 +30,17 @@
     src: kubernetes/ghost/ghost-service.yml
     namespace: default
 
+- name: Get mysql pod name
+  kubernetes.core.k8s_info:
+    kind: Pod
+    wait: true
+    wait_condition:
+      type: Ready
+    label_selectors:
+      - app = mysql
+  register: mysql_pod
+
+- name: Create admin account
+  command: kubectl exec "{{ mysql_pod.resources[0].metadata.name }}" -- mysql --host=localhost --database=ghost --password=ghost --user=ghost --execute="update users set name='ascn', email='ascn@example.com', status='active', password='$2a$10$l/W1iz.xP5j21iVob31aZOf4r7shBdjtROqNLlDiTSHVD6wUSRc4i' where id=1;"
+
 # TODO: Criar conta de admin

@@ -34,10 +34,10 @@ spec:
           value: ghost
         ports:
         - containerPort: 2368
-      initContainers:
-      - name: migrate-ghost
-        image: ghost:5.23
-        command: ['ghost', 'migrate', '--no-prompt', '--allow-root', '--db', 'mysql', '--dbhost', 'mysql-service', '--dbuser', 'ghost', '--dbpass', 'ghost', '--dbname', 'ghost']
-      - name: create-admin-user
-        image: mysql
-        command: ['mysql', '--host=mysql-service', '--database=ghost', '--password=ghost', '--user=ghost', "--execute=update users set name='ascn', email='ascn@example.com', status='active', password='$2b$10$sCPWMyZr2v3sIavNWzGageBwMfeylrf/WZESS4oEkXQQ4Xow.d2ly0' where id=1;"]
+      # initContainers:
+      # - name: migrate-ghost
+      #   image: ghost:5.23
+      #   command: ['ghost', 'migrate', '--no-prompt', '--allow-root', '--db', 'mysql', '--dbhost', 'mysql-service', '--dbuser', 'ghost', '--dbpass', 'ghost', '--dbname', 'ghost']
+      # - name: create-admin-user
+      #   image: mysql
+      #   command: ['mysql', '--host=mysql-service', '--database=ghost', '--password=ghost', '--user=ghost', "--execute=update users set name='ascn', email='ascn@example.com', status='active', password='$2b$10$sCPWMyZr2v3sIavNWzGageBwMfeylrf/WZESS4oEkXQQ4Xow.d2ly0' where id=1;"]
