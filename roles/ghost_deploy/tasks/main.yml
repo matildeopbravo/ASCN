@@ -60,5 +60,3 @@
   set_fact:
     ghost_ip: "{{ghost_service.result.status.loadBalancer.ingress[0].ip}}"
     ghost_port: "{{ ghost_service.result.spec.ports[0].port }}"
-
-# TODO: Criar conta de admin
