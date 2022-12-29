@@ -1,0 +1,32 @@
+---
+
+- name: Undeploy Ghost service
+  kubernetes.core.k8s:
+    state: absent
+    src: kubernetes/ghost/ghost-service.yml
+    namespace: default
+
+- name: Undeploy Ghost
+  kubernetes.core.k8s:
+    state: absent
+    src: kubernetes/ghost/ghost-deployment.yml
+    namespace: default
+
+- name: Undeploy MySQL service
+  kubernetes.core.k8s:
+    state: absent
+    src: kubernetes/mysql/mysql-service.yml
+    namespace: default
+
+- name: Undeploy MySQL
+  kubernetes.core.k8s:
+    state: absent
+    src: kubernetes/mysql/mysql-deployment.yml
+    namespace: default
+
+- name: Destroy MySQL data
+  kubernetes.core.k8s:
+    state: absent
+    src: kubernetes/mysql/mysql-pvc.yml
+    namespace: default
+  when: delete_data is defined and delete_data
