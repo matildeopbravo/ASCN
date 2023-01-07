@@ -32,6 +32,7 @@
   kubernetes.core.k8s:
     state: present
     src: kubernetes/ghost/ghost-deployment.yml
+    wait: true
     namespace: default
 
 - name: Create Ghost service
@@ -39,16 +40,18 @@
     state: present
     src: kubernetes/ghost/ghost-service.yml
     namespace: default
-  register: ghost_service
 
-- name: Wait for Ghost
+# Have to get the service like this otherwise it might not be available initially
+- name: Wait for Ghost service
   kubernetes.core.k8s_info:
-    kind: Pod
-    wait: true
-    wait_condition:
-      type: Ready
+    kind: Service
     label_selectors:
       - app = ghost
+  # shell: "kubectl get -n default service ghost -o jsonpath='{.status.loadBalancer.ingress[0].ip}'"
+  register: ghost_service
+  until: ghost_service.resources[0].status.loadBalancer != {}
+  delay: 5
+  retries: 10
 
 - name: Sleep 30s (wait for migrations to run)
   command: sleep 30
@@ -58,5 +61,5 @@
 
 - name: Set ghost_ip
   set_fact:
-    ghost_ip: "{{ghost_service.result.status.loadBalancer.ingress[0].ip}}"
-    ghost_port: "{{ ghost_service.result.spec.ports[0].port }}"
+    ghost_ip: "{{ghost_service.resources[0].status.loadBalancer.ingress[0].ip}}"
+    ghost_port: "{{ ghost_service.resources[0].spec.ports[0].port }}"
