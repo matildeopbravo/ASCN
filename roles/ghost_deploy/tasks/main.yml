@@ -3,19 +3,19 @@
 - name: Create MySQL PVC
   kubernetes.core.k8s:
     state: present
-    src: kubernetes/mysql/mysql-pvc.yml
+    template: mysql/mysql-pvc.yml
     namespace: default
 
 - name: Create MySQL deployment
   kubernetes.core.k8s:
     state: present
-    src: kubernetes/mysql/mysql-deployment.yml
+    template: mysql/mysql-deployment.yml
     namespace: default
 
 - name: Create MySQL service
   kubernetes.core.k8s:
     state: present
-    src: kubernetes/mysql/mysql-service.yml
+    template: mysql/mysql-service.yml
     namespace: default
 
 - name: Get mysql pod name
@@ -28,17 +28,16 @@
       - app = mysql
   register: mysql_pod
 
-- name: Create Ghost deployment
+- name: Create Ghost PVC
   kubernetes.core.k8s:
     state: present
-    src: kubernetes/ghost/ghost-deployment.yml
-    wait: true
+    template: ghost/ghost-pvc.yml
     namespace: default
 
 - name: Create Ghost service
   kubernetes.core.k8s:
     state: present
-    src: kubernetes/ghost/ghost-service.yml
+    template: ghost/ghost-service.yml
     namespace: default
 
 # Have to get the service like this otherwise it might not be available initially
@@ -53,13 +52,21 @@
   delay: 5
   retries: 10
 
+- name: Set ghost_ip
+  set_fact:
+    ghost_ip: "{{ghost_service.resources[0].status.loadBalancer.ingress[0].ip}}"
+    ghost_port: "{{ ghost_service.resources[0].spec.ports[0].port }}"
+
+- name: Create Ghost deployment
+  kubernetes.core.k8s:
+    state: present
+    template: ghost/ghost-deployment.yml
+    wait: true
+    namespace: default
+
 - name: Sleep 30s (wait for migrations to run)
   command: sleep 30
 
 - name: Create admin account
   command: kubectl exec "{{ mysql_pod.resources[0].metadata.name }}" -- mysql --host=localhost --database=ghost --password=ghost --user=ghost --execute="update users set name='ascn', email='ascn@example.com', status='active', password='$2a$10$l/W1iz.xP5j21iVob31aZOf4r7shBdjtROqNLlDiTSHVD6wUSRc4i' where id=1;"
 
-- name: Set ghost_ip
-  set_fact:
-    ghost_ip: "{{ghost_service.resources[0].status.loadBalancer.ingress[0].ip}}"
-    ghost_port: "{{ ghost_service.resources[0].spec.ports[0].port }}"

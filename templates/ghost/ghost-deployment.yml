@@ -32,12 +32,14 @@ spec:
           value: ghost
         - name: database__connection__password
           value: ghost
+        - name: url
+          value: http://{{ ghost_ip }}
         ports:
         - containerPort: 2368
-      # initContainers:
-      # - name: migrate-ghost
-      #   image: ghost:5.23
-      #   command: ['ghost', 'migrate', '--no-prompt', '--allow-root', '--db', 'mysql', '--dbhost', 'mysql-service', '--dbuser', 'ghost', '--dbpass', 'ghost', '--dbname', 'ghost']
-      # - name: create-admin-user
-      #   image: mysql
-      #   command: ['mysql', '--host=mysql-service', '--database=ghost', '--password=ghost', '--user=ghost', "--execute=update users set name='ascn', email='ascn@example.com', status='active', password='$2b$10$sCPWMyZr2v3sIavNWzGageBwMfeylrf/WZESS4oEkXQQ4Xow.d2ly0' where id=1;"]
+        volumeMounts:
+        - name: ghost-persistent-storage
+          mountPath: /var/lib/ghost/content
+      volumes:
+      - name: ghost-persistent-storage
+        persistentVolumeClaim:
+          claimName: ghost-pv-claim
