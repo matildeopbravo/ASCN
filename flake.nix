@@ -8,6 +8,7 @@
         name = "ascn";
         buildInputs = [
           ansible
+          jmeter
           (google-cloud-sdk.withExtraComponents [
             google-cloud-sdk.components.kubectl
           ])
