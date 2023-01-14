@@ -27,9 +27,9 @@ spec:
         - name: MYSQL_DATABASE
           value: ghost
         - name: MYSQL_USER
-          value: ghost
+          value: {{ mysql_user }}
         - name: MYSQL_PASSWORD
-          value: "ghost" #TODO: Use secret
+          value: {{ mysql_pass }}
         ports:
         - containerPort: 3306
         volumeMounts:

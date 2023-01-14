@@ -68,5 +68,5 @@
   command: sleep 30
 
 - name: Create admin account
-  command: kubectl exec "{{ mysql_pod.resources[0].metadata.name }}" -- mysql --host=localhost --database=ghost --password=ghost --user=ghost --execute="update users set name='ascn', email='ascn@example.com', status='active', password='$2a$10$l/W1iz.xP5j21iVob31aZOf4r7shBdjtROqNLlDiTSHVD6wUSRc4i' where id=1;"
+  command: kubectl exec "{{ mysql_pod.resources[0].metadata.name }}" -- mysql --host=localhost --database=ghost --password={{ mysql_pass }} --user={{ mysql_user }} --execute="update users set name='ascn', email='ascn@example.com', status='active', password='$2a$10$l/W1iz.xP5j21iVob31aZOf4r7shBdjtROqNLlDiTSHVD6wUSRc4i' where id=1;"
 

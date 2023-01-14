@@ -22,18 +22,36 @@ spec:
       - name: ghost
         image: ghost:5.23
         env:
+        - name: NODE_ENV
+          value: production
         - name: database__client
           value: mysql
         - name: database__connection__host
           value: mysql-service
         - name: database__connection__user
-          value: ghost
+          value: {{ mysql_user }}
         - name: database__connection__database
           value: ghost
         - name: database__connection__password
-          value: ghost
+          value: {{ mysql_pass }}
         - name: url
           value: http://{{ ghost_ip }}
+        - name: mail__transport
+          value: SMTP
+        - name: mail__options__service
+          value: Mailgun
+        - name: mail__options__host
+          value: smtp.eu.mailgun.org
+        - name: mail__options__port
+          value: "465"
+        - name: mail__options__secure
+          value: "true"
+        - name: mail__options__auth__user
+          value: "{{ mailgun_user }}"
+        - name: mail__options__auth__pass
+          value: "{{ mailgun_pass }}"
+        - name: mail__from
+          value: "ghost@ascn.pta2002.com"
         ports:
         - containerPort: 2368
         volumeMounts:
