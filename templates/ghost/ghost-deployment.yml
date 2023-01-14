@@ -12,6 +12,7 @@ spec:
       app: ghost
   strategy:
     type: Recreate
+  replicas: {{ ghost_replicas }}
   template:
     metadata:
       labels:
