@@ -12,3 +12,23 @@
   until: result.status == 200
   retries: 3
   delay: 5
+
+# - name: Check that logging in as admin is possible
+#   ansible.builtin.uri:
+#     url: "http://{{ ghost_ip }}:{{ ghost_port }}/login??"
+#     method: POST
+#     status_code: 200
+#   register: result
+#
+# - name: Check that we can create a post
+#
+# - name: Check that we can subscribe
+
+- name: Run jmeter test with 1 thread
+  shell: jmeter -n -t jmeter/test.jmx -l results1 -JghostIp={{ ghost_ip }} -JghostPort={{ ghost_port }} -JthreadCount=1
+
+- name: Run jmeter test with 10 threads
+  shell: jmeter -n -t jmeter/test.jmx -l results10 -JghostIp={{ ghost_ip }} -JghostPort={{ ghost_port }} -JthreadCount=10
+
+- name: Run jmeter test with 100 threads
+  shell: jmeter -n -t jmeter/test.jmx -l results100 -JghostIp={{ ghost_ip }} -JghostPort={{ ghost_port }} -JthreadCount=100
