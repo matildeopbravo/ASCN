@@ -13,16 +13,52 @@
   retries: 3
   delay: 5
 
-# - name: Check that logging in as admin is possible
-#   ansible.builtin.uri:
-#     url: "http://{{ ghost_ip }}:{{ ghost_port }}/login??"
-#     method: POST
-#     status_code: 200
-#   register: result
-#
-# - name: Check that we can create a post
-#
-# - name: Check that we can subscribe
+- name: Check that logging in as admin is possible
+  ansible.builtin.uri:
+    url: "http://{{ ghost_ip }}:{{ ghost_port }}/ghost/api/admin/session/"
+    method: POST
+    status_code: 201
+    body_format: json
+    body:
+      username: ascn@example.com
+      password: ascn123
+  register: login
+
+
+- name: Check that we can create a post
+  ansible.builtin.uri:
+    url: "http://{{ ghost_ip }}:{{ ghost_port }}/ghost/api/admin/posts/"
+    method: POST
+    body_format: json
+    status_code: 201
+    headers:
+      Cookie: "{{ login.cookies_string }}"
+    body:
+      posts:
+        - title: Test post
+          status: published
+          html: "<p>Hello</p>"
+  register: post
+
+- name: Check that we can read the post
+  ansible.builtin.uri:
+    url: "{{ post.json.posts[0].url }}"
+    method: GET
+    status_code: 200
+
+- name: Check that we can subscribe
+  ansible.builtin.uri:
+    url: "http://{{ ghost_ip }}:{{ ghost_port }}/members/api/send-magic-link/"
+    method: POST
+    body_format: json
+    body:
+      email: "test@pta2002.com"
+      emailType: "signup"
+      name: "test"
+      requestSrc: "portal"
+    status_code: 201
+    headers:
+      Cookie: "{{ result.cookies_string }}"
 
 - name: Run jmeter test with 1 thread
   shell: jmeter -n -t jmeter/test.jmx -l results1 -JghostIp={{ ghost_ip }} -JghostPort={{ ghost_port }} -JthreadCount=1
